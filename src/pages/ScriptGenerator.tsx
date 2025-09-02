@@ -1,32 +1,102 @@
 import { useState } from "react"
-import { Sparkles, Copy, Save, Download, RefreshCw } from "lucide-react"
+import { Sparkles, Copy, Save, RefreshCw, Youtube, Instagram, Linkedin, Hash } from "lucide-react"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
+import { useToast } from "@/hooks/use-toast"
+
+interface PlatformResult {
+  id: string
+  name: string
+  icon: React.ElementType
+  color: string
+  bgColor: string
+  caption: string
+  hashtags: string[]
+}
 
 export default function ScriptGenerator() {
   const [script, setScript] = useState("")
-  const [generatedCaption, setGeneratedCaption] = useState("")
-  const [hashtags, setHashtags] = useState<string[]>([])
-  const [seoScore, setSeoScore] = useState(0)
+  const [platformResults, setPlatformResults] = useState<PlatformResult[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
+  const { toast } = useToast()
 
   const handleGenerate = async () => {
     if (!script.trim()) return
     
     setIsGenerating(true)
     
-    // Simulate AI generation
+    // Simulate API call to /api/generate
     setTimeout(() => {
-      setGeneratedCaption("🎯 Ready to transform your content creation game? Here's the ultimate guide that content creators don't want you to know! From scripting to publishing, discover the secrets that helped me grow to 100K+ followers. Save this post and let me know which tip you'll try first! 💫")
-      setHashtags(["#ContentCreator", "#SocialMediaTips", "#CreatorTips", "#DigitalMarketing", "#ContentStrategy", "#YouTubeShorts", "#InstagramReels", "#TikTokTips"])
-      setSeoScore(87)
+      const mockResults: PlatformResult[] = [
+        {
+          id: "youtube",
+          name: "YouTube Shorts",
+          icon: Youtube,
+          color: "text-red-600",
+          bgColor: "bg-red-50 border-red-200",
+          caption: "🔥 VIRAL Content Creation Secrets That Influencers Don't Want You to Know! From 0 to 100K followers with these proven strategies. Save this for later! 🚀",
+          hashtags: ["#YouTubeShorts", "#ContentCreator", "#ViralTips", "#CreatorSecrets", "#SocialMediaGrowth"]
+        },
+        {
+          id: "instagram",
+          name: "Instagram Reels",
+          icon: Instagram,
+          color: "text-pink-600",
+          bgColor: "bg-pink-50 border-pink-200",
+          caption: "✨ Ready to level up your content game? Here are the insider tips that helped me grow to 100K+ followers! Which one will you try first? 💫 Save & share!",
+          hashtags: ["#InstagramReels", "#ContentStrategy", "#InfluencerTips", "#SocialMediaTips", "#CreatorLife"]
+        },
+        {
+          id: "tiktok",
+          name: "TikTok",
+          icon: Hash, // Using Hash as TikTok icon placeholder
+          color: "text-black",
+          bgColor: "bg-gray-50 border-gray-200",
+          caption: "POV: You discover the content secrets that change everything 🤯 From zero to viral in 30 days! Drop a 🔥 if you're ready to level up!",
+          hashtags: ["#TikTokTips", "#ContentHacks", "#ViralContent", "#CreatorTips", "#ForYou"]
+        },
+        {
+          id: "linkedin",
+          name: "LinkedIn",
+          icon: Linkedin,
+          color: "text-blue-600",
+          bgColor: "bg-blue-50 border-blue-200",
+          caption: "The content creation strategies that transformed my professional brand and grew my network to 100K+ connections. Here's what I learned...",
+          hashtags: ["#ContentMarketing", "#ProfessionalGrowth", "#LinkedInCreator", "#DigitalMarketing", "#PersonalBranding"]
+        }
+      ]
+      setPlatformResults(mockResults)
       setIsGenerating(false)
+      toast({
+        title: "Captions Generated!",
+        description: "Platform-specific captions and hashtags have been created.",
+      })
     }, 2000)
+  }
+
+  const copyToClipboard = async (text: string, type: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      toast({
+        title: "Copied!",
+        description: `${type} copied to clipboard.`,
+      })
+    } catch (error) {
+      toast({
+        title: "Copy failed",
+        description: "Please try selecting and copying manually.",
+        variant: "destructive"
+      })
+    }
+  }
+
+  const copyPlatformContent = (platform: PlatformResult) => {
+    const content = `${platform.caption}\n\n${platform.hashtags.join(" ")}`
+    copyToClipboard(content, "Platform content")
   }
 
   return (
@@ -34,165 +104,157 @@ export default function ScriptGenerator() {
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Script & Caption Generator</h1>
         <p className="text-muted-foreground">
-          Transform your scripts into engaging captions and hashtags with AI assistance
+          Transform your scripts into platform-specific captions and hashtags with AI assistance
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Script Input */}
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Sparkles className="w-5 h-5 mr-2 text-primary" />
-                Your Script
-              </CardTitle>
-              <CardDescription>
-                Paste or type your video script here. The AI will analyze it to generate optimized captions.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="script">Video Script</Label>
-                <Textarea
-                  id="script"
-                  placeholder="Paste your video script here... 
+      {/* Script Input Section */}
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Sparkles className="w-5 h-5 mr-2 text-primary" />
+            Your Script
+          </CardTitle>
+          <CardDescription>
+            Paste or type your video script here. AI will generate optimized captions for each platform.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="script">Video Script</Label>
+            <Textarea
+              id="script"
+              placeholder="Paste your video script here... 
 
 Example: 'Hey everyone! Today I'm sharing the top 5 social media tips that helped me grow my following to 100K. First tip is consistency - posting at the same time daily increases engagement by 23%...'"
-                  value={script}
-                  onChange={(e) => setScript(e.target.value)}
-                  className="min-h-[300px] resize-none"
-                />
-              </div>
-              
-              <div className="flex items-center justify-between pt-4">
-                <span className="text-sm text-muted-foreground">
-                  {script.length} characters
-                </span>
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm">
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Draft
-                  </Button>
-                  <Button 
-                    onClick={handleGenerate}
-                    disabled={!script.trim() || isGenerating}
-                    className="relative"
-                  >
-                    {isGenerating ? (
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Sparkles className="w-4 h-4 mr-2" />
-                    )}
-                    {isGenerating ? "Generating..." : "Generate with AI"}
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              value={script}
+              onChange={(e) => setScript(e.target.value)}
+              className="min-h-[200px] resize-none"
+            />
+          </div>
+          
+          <div className="flex items-center justify-between pt-4">
+            <span className="text-sm text-muted-foreground">
+              {script.length} characters
+            </span>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm">
+                <Save className="w-4 h-4 mr-2" />
+                Save Draft
+              </Button>
+              <Button 
+                onClick={handleGenerate}
+                disabled={!script.trim() || isGenerating}
+                className="relative"
+              >
+                {isGenerating ? (
+                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4 mr-2" />
+                )}
+                {isGenerating ? "Generating..." : "Generate Captions & Hashtags"}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-        {/* Generated Content */}
-        <div className="space-y-6">
-          {/* SEO Score */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">SEO Score</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-2xl font-bold">{seoScore}/100</span>
-                <Badge variant={seoScore >= 80 ? "default" : seoScore >= 60 ? "secondary" : "outline"}>
-                  {seoScore >= 80 ? "Excellent" : seoScore >= 60 ? "Good" : "Needs Work"}
-                </Badge>
-              </div>
-              <Progress value={seoScore} className="h-2" />
-              <p className="text-sm text-muted-foreground mt-2">
-                Based on engagement keywords, length, and hashtag optimization
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Generated Caption */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Generated Caption
-                <Button variant="outline" size="sm">
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {generatedCaption ? (
-                <div className="space-y-4">
-                  <div className="p-4 bg-muted/30 rounded-lg border">
-                    <p className="text-sm leading-relaxed">{generatedCaption}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button variant="outline" size="sm">
-                      <RefreshCw className="w-4 h-4 mr-2" />
-                      Regenerate
+      {/* Platform Results Grid */}
+      {platformResults.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {platformResults.map((platform, index) => (
+            <motion.div
+              key={platform.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1, duration: 0.3 }}
+            >
+              <Card className={`${platform.bgColor} border-2`}>
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <platform.icon className={`w-5 h-5 mr-2 ${platform.color}`} />
+                      {platform.name}
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => copyPlatformContent(platform)}
+                    >
+                      <Copy className="w-4 h-4 mr-2" />
+                      Copy All
                     </Button>
-                    <Button variant="outline" size="sm">
-                      Edit
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Sparkles className="w-8 h-8 mx-auto mb-3 opacity-50" />
-                  <p>Your AI-generated caption will appear here</p>
-                  <p className="text-sm">Add your script and click "Generate with AI"</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Hashtags */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Hashtags
-                <Button variant="outline" size="sm">
-                  <Copy className="w-4 h-4 mr-2" />
-                  Copy All
-                </Button>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {hashtags.length > 0 ? (
-                <div className="space-y-4">
-                  <div className="flex flex-wrap gap-2">
-                    {hashtags.map((tag, index) => (
-                      <Badge 
-                        key={index} 
-                        variant="secondary" 
-                        className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Caption Section */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium">Caption</Label>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => copyToClipboard(platform.caption, "Caption")}
+                        className="h-6 px-2"
                       >
-                        {tag}
-                      </Badge>
-                    ))}
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <div className="p-3 bg-background rounded-md border text-sm leading-relaxed">
+                      {platform.caption}
+                    </div>
                   </div>
-                  <Separator />
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>{hashtags.length} hashtags generated</span>
-                    <Button variant="link" size="sm" className="px-0">
-                      Customize hashtags
-                    </Button>
+
+                  {/* Hashtags Section */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm font-medium">Hashtags</Label>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => copyToClipboard(platform.hashtags.join(" "), "Hashtags")}
+                        className="h-6 px-2"
+                      >
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {platform.hashtags.map((tag, tagIndex) => (
+                        <Badge 
+                          key={tagIndex} 
+                          variant="secondary" 
+                          className="text-xs cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                          onClick={() => copyToClipboard(tag, "Hashtag")}
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <p>Trending hashtags will appear here</p>
-                  <p className="text-sm">Generated based on your script content</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
-      </div>
+      )}
+
+      {/* Empty State */}
+      {platformResults.length === 0 && !isGenerating && (
+        <div className="text-center py-12 text-muted-foreground">
+          <Sparkles className="w-12 h-12 mx-auto mb-4 opacity-50" />
+          <h3 className="text-lg font-medium mb-2">Ready to Generate Platform-Specific Content</h3>
+          <p className="text-sm">Add your script above and click "Generate Captions & Hashtags" to get started</p>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {isGenerating && (
+        <div className="text-center py-12">
+          <RefreshCw className="w-8 h-8 mx-auto mb-4 animate-spin text-primary" />
+          <h3 className="text-lg font-medium mb-2">Generating Platform Content...</h3>
+          <p className="text-sm text-muted-foreground">Creating optimized captions and hashtags for all platforms</p>
+        </div>
+      )}
     </div>
   )
 }
