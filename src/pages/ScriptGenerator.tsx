@@ -1,11 +1,12 @@
 import { useState } from "react"
-import { Sparkles, Copy, Save, RefreshCw, Youtube, Instagram, Linkedin, Hash } from "lucide-react"
+import { Sparkles, Copy, Save, RefreshCw, Youtube, Instagram, Linkedin, Hash, TrendingUp } from "lucide-react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
+import { Progress } from "@/components/ui/progress"
 import { useToast } from "@/hooks/use-toast"
 
 interface PlatformResult {
@@ -21,6 +22,7 @@ interface PlatformResult {
 export default function ScriptGenerator() {
   const [script, setScript] = useState("")
   const [platformResults, setPlatformResults] = useState<PlatformResult[]>([])
+  const [seoScore, setSeoScore] = useState(0)
   const [isGenerating, setIsGenerating] = useState(false)
   const { toast } = useToast()
 
@@ -70,6 +72,7 @@ export default function ScriptGenerator() {
         }
       ]
       setPlatformResults(mockResults)
+      setSeoScore(87)
       setIsGenerating(false)
       toast({
         title: "Captions Generated!",
@@ -158,6 +161,50 @@ Example: 'Hey everyone! Today I'm sharing the top 5 social media tips that helpe
           </div>
         </CardContent>
       </Card>
+
+      {/* SEO Optimization Score */}
+      {seoScore > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="flex items-center">
+                <TrendingUp className="w-5 h-5 mr-2 text-primary" />
+                SEO Optimization Score
+              </CardTitle>
+              <CardDescription>
+                Analysis of your content for search engine and platform optimization
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-3xl font-bold text-primary">{seoScore}/100</span>
+                <Badge variant={seoScore >= 80 ? "default" : seoScore >= 60 ? "secondary" : "outline"} className="text-sm">
+                  {seoScore >= 80 ? "Excellent" : seoScore >= 60 ? "Good" : "Needs Improvement"}
+                </Badge>
+              </div>
+              <Progress value={seoScore} className="h-3 mb-4" />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div className="space-y-1">
+                  <div className="font-medium text-green-600">✓ Engagement Keywords</div>
+                  <p className="text-muted-foreground">Strong action words detected</p>
+                </div>
+                <div className="space-y-1">
+                  <div className="font-medium text-green-600">✓ Optimal Length</div>
+                  <p className="text-muted-foreground">Good character count for platforms</p>
+                </div>
+                <div className="space-y-1">
+                  <div className="font-medium text-yellow-600">⚠ Hashtag Density</div>
+                  <p className="text-muted-foreground">Could use more niche hashtags</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Platform Results Grid */}
       {platformResults.length > 0 && (
