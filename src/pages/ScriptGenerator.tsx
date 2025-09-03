@@ -105,9 +105,9 @@ export default function ScriptGenerator() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Script & Caption Generator</h1>
+        <h1 className="text-3xl font-bold mb-2">Caption & Hashtag Generator</h1>
         <p className="text-muted-foreground">
-          Transform your scripts into platform-specific captions and hashtags with AI assistance
+          Create platform-specific captions and hashtags optimized for maximum engagement
         </p>
       </div>
 
