@@ -173,7 +173,7 @@ Example: 'Just discovered these 5 game-changing social media strategies that hel
             <CardHeader>
               <CardTitle className="flex items-center">
                 <TrendingUp className="w-5 h-5 mr-2 text-primary" />
-                SEO Optimization
+                SEO Score
               </CardTitle>
               <CardDescription>
                 Analysis of your content for search engine and platform optimization
