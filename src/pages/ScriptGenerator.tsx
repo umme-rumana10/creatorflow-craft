@@ -116,20 +116,20 @@ export default function ScriptGenerator() {
         <CardHeader>
           <CardTitle className="flex items-center">
             <Sparkles className="w-5 h-5 mr-2 text-primary" />
-            Your Script
+            What's On Your Mind Today?
           </CardTitle>
           <CardDescription>
-            Paste or type your video script here. AI will generate optimized captions for each platform.
+            Share your thoughts, ideas, or content. AI will generate optimized captions and hashtags for each platform.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="script">Video Script</Label>
+            <Label htmlFor="script">Your Content</Label>
             <Textarea
               id="script"
-              placeholder="Paste your video script here... 
+              placeholder="What's on your mind today? Share your thoughts, ideas, or content...
 
-Example: 'Hey everyone! Today I'm sharing the top 5 social media tips that helped me grow my following to 100K. First tip is consistency - posting at the same time daily increases engagement by 23%...'"
+Example: 'Just discovered these 5 game-changing social media strategies that helped me grow my following to 100K. The first one is all about consistency - posting at the same time daily increases engagement by 23%...'"
               value={script}
               onChange={(e) => setScript(e.target.value)}
               className="min-h-[200px] resize-none"
@@ -173,7 +173,7 @@ Example: 'Hey everyone! Today I'm sharing the top 5 social media tips that helpe
             <CardHeader>
               <CardTitle className="flex items-center">
                 <TrendingUp className="w-5 h-5 mr-2 text-primary" />
-                SEO Optimization Score
+                SEO Optimization
               </CardTitle>
               <CardDescription>
                 Analysis of your content for search engine and platform optimization
@@ -290,7 +290,7 @@ Example: 'Hey everyone! Today I'm sharing the top 5 social media tips that helpe
         <div className="text-center py-12 text-muted-foreground">
           <Sparkles className="w-12 h-12 mx-auto mb-4 opacity-50" />
           <h3 className="text-lg font-medium mb-2">Ready to Generate Platform-Specific Content</h3>
-          <p className="text-sm">Add your script above and click "Generate Captions & Hashtags" to get started</p>
+          <p className="text-sm">Share your content above and click "Generate Captions & Hashtags" to get started</p>
         </div>
       )}
 
