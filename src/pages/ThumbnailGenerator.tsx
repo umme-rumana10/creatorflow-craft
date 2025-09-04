@@ -1,267 +1,298 @@
-import { useState } from "react"
-import { Upload, Palette, Type, Download, Sparkles, Image as ImageIcon } from "lucide-react"
+import { useState, useRef } from "react"
+import { Upload, Download, Sparkles, Image as ImageIcon, FileImage, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
 import { Badge } from "@/components/ui/badge"
+import { toast } from "sonner"
 
-const templateCategories = [
-  "YouTube Thumbnails",
-  "Instagram Posts",
-  "TikTok Covers", 
-  "LinkedIn Banners"
-]
-
-const templates = [
-  { id: 1, name: "Bold Gaming", category: "YouTube Thumbnails", color: "#FF6B6B" },
-  { id: 2, name: "Clean Business", category: "LinkedIn Banners", color: "#4ECDC4" },
-  { id: 3, name: "Vibrant Lifestyle", category: "Instagram Posts", color: "#45B7D1" },
-  { id: 4, name: "Dark Tech", category: "YouTube Thumbnails", color: "#96CEB4" },
-  { id: 5, name: "Minimalist", category: "TikTok Covers", color: "#FFEAA7" },
-  { id: 6, name: "Educational", category: "YouTube Thumbnails", color: "#DDA0DD" },
-]
-
-const brandColors = [
-  "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", 
-  "#FFEAA7", "#DDA0DD", "#FF7675", "#74B9FF"
+const aiStyles = [
+  { 
+    id: 1, 
+    name: "Professional LinkedIn", 
+    description: "Clean, business-focused with subtle branding",
+    category: "LinkedIn",
+    color: "#0077B5"
+  },
+  { 
+    id: 2, 
+    name: "YouTube Thumbnail", 
+    description: "Eye-catching with bold text and vibrant colors",
+    category: "YouTube",
+    color: "#FF0000"
+  },
+  { 
+    id: 3, 
+    name: "Instagram Story", 
+    description: "Modern, aesthetic with trendy filters",
+    category: "Instagram",
+    color: "#E4405F"
+  },
+  { 
+    id: 4, 
+    name: "Instagram Post", 
+    description: "Square format with engaging visual elements",
+    category: "Instagram",
+    color: "#E4405F"
+  },
+  { 
+    id: 5, 
+    name: "TikTok Cover", 
+    description: "Dynamic and youthful with trending aesthetics",
+    category: "TikTok",
+    color: "#000000"
+  },
+  { 
+    id: 6, 
+    name: "Twitter Header", 
+    description: "Minimalist with brand consistency",
+    category: "Twitter",
+    color: "#1DA1F2"
+  }
 ]
 
 export default function ThumbnailGenerator() {
-  const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null)
-  const [selectedCategory, setSelectedCategory] = useState("All")
-  const [title, setTitle] = useState("")
-  const [subtitle, setSubtitle] = useState("")
-  const [selectedColor, setSelectedColor] = useState(brandColors[0])
-  const [fontSize, setFontSize] = useState([24])
+  const [selectedStyle, setSelectedStyle] = useState<number | null>(null)
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [generatedResults, setGeneratedResults] = useState<string[]>([])
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const filteredTemplates = selectedCategory === "All" 
-    ? templates 
-    : templates.filter(t => t.category === selectedCategory)
+  const handleImageUpload = (file: File) => {
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/png')) {
+      setUploadedImage(file)
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(file)
+      toast.success("Image uploaded successfully!")
+    } else {
+      toast.error("Please upload a JPG or PNG image")
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    const files = e.dataTransfer.files
+    if (files.length > 0) {
+      handleImageUpload(files[0])
+    }
+  }
+
+  const handleFileSelect = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleGenerateWithAI = async () => {
+    if (!uploadedImage || !selectedStyle) {
+      toast.error("Please upload an image and select a style")
+      return
+    }
+
+    setIsGenerating(true)
+    try {
+      // Simulate AI processing delay
+      await new Promise(resolve => setTimeout(resolve, 3000))
+      
+      // Mock generated results - in real app, this would be API call
+      const mockResults = [
+        imagePreview + "?generated=1",
+        imagePreview + "?generated=2", 
+        imagePreview + "?generated=3"
+      ]
+      setGeneratedResults(mockResults)
+      toast.success("AI generation completed!")
+    } catch (error) {
+      toast.error("Failed to generate thumbnails")
+    } finally {
+      setIsGenerating(false)
+    }
+  }
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Thumbnail & Graphics Generator</h1>
+        <h1 className="text-3xl font-bold mb-2">AI Thumbnail Generator</h1>
         <p className="text-muted-foreground">
-          Create stunning thumbnails and graphics with AI-powered design tools
+          Upload your image and transform it with AI-powered styles for different platforms
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Controls Sidebar */}
+        {/* Upload & Controls Sidebar */}
         <div className="lg:col-span-1 space-y-6">
           {/* Upload Section */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Upload Image</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer">
-                <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground mb-2">
-                  Drop your image here or click to browse
-                </p>
-                <Button variant="outline" size="sm">
-                  Choose File
-                </Button>
-              </div>
-              <Button className="w-full" variant="secondary">
-                <Sparkles className="w-4 h-4 mr-2" />
-                Generate with AI
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Design Controls */}
-          <Card>
-            <CardHeader>
               <CardTitle className="text-lg flex items-center">
-                <Palette className="w-4 h-4 mr-2" />
-                Design Controls
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Image
               </CardTitle>
+              <CardDescription>JPG or PNG files only</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Text Content */}
-              <div className="space-y-2">
-                <Label htmlFor="title">Title Text</Label>
-                <Input
-                  id="title"
-                  placeholder="Enter main title"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
+              <div 
+                className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                onDragOver={handleDragOver}
+                onDrop={handleDrop}
+                onClick={handleFileSelect}
+              >
+                {imagePreview ? (
+                  <div className="space-y-2">
+                    <img 
+                      src={imagePreview} 
+                      alt="Uploaded preview" 
+                      className="w-full h-24 object-cover rounded-lg"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      Click to change image
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <FileImage className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Drop your image here or click to browse
+                    </p>
+                    <Button variant="outline" size="sm">
+                      Choose File
+                    </Button>
+                  </>
+                )}
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="subtitle">Subtitle</Label>
-                <Input
-                  id="subtitle"
-                  placeholder="Enter subtitle"
-                  value={subtitle}
-                  onChange={(e) => setSubtitle(e.target.value)}
-                />
-              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) handleImageUpload(file)
+                }}
+                className="hidden"
+              />
 
-              {/* Brand Colors */}
-              <div className="space-y-2">
-                <Label>Brand Color</Label>
-                <div className="grid grid-cols-4 gap-2">
-                  {brandColors.map((color) => (
-                    <button
-                      key={color}
-                      className={`w-8 h-8 rounded-md border-2 transition-all ${
-                        selectedColor === color ? 'border-ring scale-110' : 'border-transparent'
-                      }`}
-                      style={{ backgroundColor: color }}
-                      onClick={() => setSelectedColor(color)}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* Font Size */}
-              <div className="space-y-2">
-                <Label>Font Size: {fontSize[0]}px</Label>
-                <Slider
-                  value={fontSize}
-                  onValueChange={setFontSize}
-                  max={48}
-                  min={12}
-                  step={2}
-                  className="w-full"
-                />
-              </div>
-
-              {/* Font Style */}
-              <div className="space-y-2">
-                <Label>Font Style</Label>
-                <Select defaultValue="bold">
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="bold">Bold</SelectItem>
-                    <SelectItem value="regular">Regular</SelectItem>
-                    <SelectItem value="italic">Italic</SelectItem>
-                    <SelectItem value="condensed">Condensed</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              <Button 
+                className="w-full" 
+                onClick={handleGenerateWithAI}
+                disabled={!uploadedImage || !selectedStyle || isGenerating}
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Generate with AI
+                  </>
+                )}
+              </Button>
             </CardContent>
           </Card>
         </div>
 
         {/* Main Content Area */}
         <div className="lg:col-span-3 space-y-6">
-          {/* Template Gallery */}
+          {/* AI Style Selection */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Template Gallery</CardTitle>
-                  <CardDescription>Choose from professionally designed templates</CardDescription>
-                </div>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-48">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All">All Categories</SelectItem>
-                    {templateCategories.map((category) => (
-                      <SelectItem key={category} value={category}>{category}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <CardTitle>AI Style Selection</CardTitle>
+              <CardDescription>Choose the platform style for your thumbnail</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {filteredTemplates.map((template) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {aiStyles.map((style) => (
                   <div
-                    key={template.id}
-                    className={`relative aspect-video rounded-lg border-2 cursor-pointer transition-all hover:scale-105 ${
-                      selectedTemplate === template.id 
+                    key={style.id}
+                    className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all hover:scale-105 ${
+                      selectedStyle === style.id 
                         ? 'border-primary shadow-lg' 
                         : 'border-border hover:border-primary/50'
                     }`}
-                    style={{ backgroundColor: template.color + '20' }}
-                    onClick={() => setSelectedTemplate(template.id)}
+                    onClick={() => setSelectedStyle(style.id)}
                   >
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        <ImageIcon className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                        <p className="font-medium text-sm">{template.name}</p>
-                        <Badge variant="secondary" className="mt-1 text-xs">
-                          {template.category}
-                        </Badge>
-                      </div>
-                    </div>
-                    {selectedTemplate === template.id && (
-                      <div className="absolute top-2 right-2">
-                        <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge 
+                        variant="secondary" 
+                        style={{ backgroundColor: style.color + '20', color: style.color }}
+                      >
+                        {style.category}
+                      </Badge>
+                      {selectedStyle === style.id && (
+                        <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center">
                           <div className="w-2 h-2 bg-white rounded-full"></div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
+                    <h3 className="font-semibold text-sm mb-1">{style.name}</h3>
+                    <p className="text-xs text-muted-foreground">{style.description}</p>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
 
-          {/* Preview Panel */}
+          {/* Results Preview */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>Preview</CardTitle>
-                <div className="flex gap-2">
-                  <Button variant="outline">
-                    <Type className="w-4 h-4 mr-2" />
-                    Edit Text
-                  </Button>
+                <div>
+                  <CardTitle>Generated Results</CardTitle>
+                  <CardDescription>AI-generated thumbnails will appear here</CardDescription>
+                </div>
+                {generatedResults.length > 0 && (
                   <Button>
                     <Download className="w-4 h-4 mr-2" />
-                    Download
+                    Download All
                   </Button>
-                </div>
+                )}
               </div>
             </CardHeader>
             <CardContent>
-              <div className="aspect-video bg-gradient-to-br from-muted to-muted/50 rounded-lg border-2 border-dashed border-border flex items-center justify-center">
-                {selectedTemplate ? (
+              {isGenerating ? (
+                <div className="aspect-video bg-muted rounded-lg flex items-center justify-center">
                   <div className="text-center">
-                    <div 
-                      className="w-full max-w-md mx-auto p-6 rounded-lg"
-                      style={{ backgroundColor: selectedColor + '10', border: `2px solid ${selectedColor}` }}
-                    >
-                      <h2 
-                        className="font-bold mb-2"
-                        style={{ 
-                          fontSize: `${fontSize[0]}px`, 
-                          color: selectedColor,
-                          lineHeight: 1.2
-                        }}
-                      >
-                        {title || "Your Title Here"}
-                      </h2>
-                      {subtitle && (
-                        <p className="text-muted-foreground" style={{ fontSize: `${fontSize[0] * 0.6}px` }}>
-                          {subtitle}
-                        </p>
-                      )}
-                    </div>
+                    <Loader2 className="w-12 h-12 mx-auto mb-3 animate-spin text-primary" />
+                    <p className="text-lg font-medium">Generating thumbnails...</p>
+                    <p className="text-sm text-muted-foreground">This may take a few moments</p>
                   </div>
-                ) : (
+                </div>
+              ) : generatedResults.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {generatedResults.map((result, index) => (
+                    <div key={index} className="relative group">
+                      <div className="aspect-video bg-muted rounded-lg overflow-hidden">
+                        <img 
+                          src={result} 
+                          alt={`Generated result ${index + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                        <Button size="sm" variant="secondary">
+                          <Download className="w-4 h-4 mr-2" />
+                          Download
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="aspect-video bg-gradient-to-br from-muted to-muted/50 rounded-lg border-2 border-dashed border-border flex items-center justify-center">
                   <div className="text-center text-muted-foreground">
                     <ImageIcon className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                    <p className="text-lg font-medium">Select a template to preview</p>
-                    <p className="text-sm">Your design will appear here</p>
+                    <p className="text-lg font-medium">Upload an image and select a style</p>
+                    <p className="text-sm">Generated thumbnails will appear here</p>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
