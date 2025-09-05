@@ -23,41 +23,43 @@ export default function About() {
     return () => clearInterval(interval)
   }, [])
 
-  const particles = Array.from({ length: 50 }, (_, i) => ({
+  const particles = Array.from({ length: 60 }, (_, i) => ({
     id: i,
-    size: Math.random() * 4 + 2,
+    size: Math.random() * 6 + 3,
     x: Math.random() * 100,
     y: Math.random() * 100,
-    opacity: Math.random() * 0.7 + 0.3,
-    color: Math.random() > 0.5 ? 'bg-yellow-400/30' : 'bg-cyan-400/30'
+    opacity: Math.random() * 0.8 + 0.4,
+    color: Math.random() > 0.5 ? 'bg-amber-400/40' : 'bg-cyan-400/40'
   }))
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 relative overflow-hidden">
-      {/* Layered Background Effects */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-cyan-500/10 to-transparent"></div>
-      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-black/20"></div>
+      {/* Enhanced Layered Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-600/30 via-cyan-500/20 to-transparent"></div>
+      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-transparent to-black/30"></div>
       
       {/* Enhanced Floating Particles */}
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
-          className={`absolute w-${Math.ceil(particle.size)} h-${Math.ceil(particle.size)} ${particle.color} rounded-full blur-sm`}
+          className={`absolute rounded-full blur-sm ${particle.color}`}
           style={{
+            width: `${particle.size}px`,
+            height: `${particle.size}px`,
             left: `${particle.x}%`,
             top: `${particle.y}%`,
             opacity: particle.opacity,
           }}
           animate={{
-            y: [0, -20, 0],
-            x: [0, 10, 0],
-            scale: [1, 1.2, 1],
+            y: [0, -30, 0],
+            x: [0, 15, 0],
+            scale: [1, 1.3, 1],
           }}
           transition={{
-            duration: 6 + Math.random() * 4,
+            duration: 8 + Math.random() * 4,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: Math.random() * 2,
+            delay: Math.random() * 3,
           }}
         />
       ))}
@@ -100,11 +102,11 @@ export default function About() {
       {/* Main Content */}
       <div className="relative z-10 min-h-screen flex items-center justify-center px-6">
         <div className="text-center max-w-4xl">
-          {/* Animated Rainbow Title */}
+          {/* Enhanced Rainbow Title with Dual Glow */}
           <motion.h1 
             className={`text-5xl md:text-6xl lg:text-7xl font-bold mb-8 bg-gradient-to-r ${gradients[currentGradient]} bg-clip-text text-transparent transition-all duration-1000 ease-in-out`}
             style={{
-              filter: 'drop-shadow(0 0 20px rgba(251, 191, 36, 0.3)) drop-shadow(0 0 40px rgba(168, 85, 247, 0.4))',
+              filter: 'drop-shadow(0 0 20px rgba(251, 191, 36, 0.5)) drop-shadow(0 0 40px rgba(168, 85, 247, 0.6))',
             }}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
