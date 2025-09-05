@@ -4,8 +4,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import About from "./pages/About";
 import Dashboard from "./pages/Dashboard";
-import ScriptGenerator from "./pages/ScriptGenerator";
+import CaptionGenerator from "./pages/CaptionGenerator";
 import ThumbnailGenerator from "./pages/ThumbnailGenerator";
 import VideoEditor from "./pages/VideoEditor";
 import Publishing from "./pages/Publishing";
@@ -23,15 +24,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/about" element={<About />} />
           <Route path="/login" element={<Login />} />
           <Route path="/" element={
             <Layout>
               <Dashboard />
             </Layout>
           } />
-          <Route path="/scripts" element={
+          <Route path="/captions" element={
             <Layout>
-              <ScriptGenerator />
+              <CaptionGenerator />
             </Layout>
           } />
           <Route path="/thumbnails" element={

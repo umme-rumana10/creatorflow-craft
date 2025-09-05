@@ -83,7 +83,7 @@ const stats = [
   }
 ]
 
-export default function Dashboard() {
+export default function UpdatedDashboard() {
   return (
     <div className="space-y-8 p-6">
       {/* Header */}

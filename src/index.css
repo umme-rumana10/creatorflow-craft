@@ -60,6 +60,8 @@
     --gradient-success: linear-gradient(135deg, hsl(var(--success)), hsl(var(--success-light)));
     --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
     --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(220 14% 98%));
+    --gradient-rainbow: linear-gradient(135deg, #f59e0b, #f97316, #ec4899, #8b5cf6, #06b6d4);
+    --gradient-background-dark: radial-gradient(ellipse at center, hsl(240 50% 15%) 0%, hsl(240 40% 8%) 100%);
     
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 hsl(var(--primary) / 0.05);
